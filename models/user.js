@@ -2,6 +2,9 @@
 const {
   Model
 } = require('sequelize');
+const bcrypt = require('bcrypt');
+
+
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     /**
@@ -12,10 +15,14 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
     }
+    validPassword(password) {
+      return  bcrypt.compareSync(password, this.password);
+    }
   }
   User.init({
     id: {
       type: DataTypes.UUID,
+      defaultValue: () => uuidv4(),
       primaryKey: true,
     },
     name: {
@@ -23,9 +30,40 @@ module.exports = (sequelize, DataTypes) => {
     },
     password: {
       type: DataTypes.STRING,
+      validate: {
+        is: /^[0-9a-f]{64}$/i,
+      },
     },
-    email: DataTypes.STRING
-  }, {
+    email: DataTypes.STRING,
+    createdAt: {
+      allowNull: false,
+      field: 'created_at',
+      type: DataTypes.DATE
+    },
+    updatedAt: {
+      allowNull: false,
+      field: 'updated_at',
+      type: DataTypes.DATE
+    }
+    
+    }, {
+    // hooks: {
+    //   beforeCreate: async (user) => {
+    //     if (typeof user.password !== "string" || user.password.length < 8) {
+    //       throw new Error("Password must be at least 8 characters long");
+    //     }
+    //     user.password = await bcrypt.hash(user.password, 10);
+
+    //   }
+    // },
+    defaultScope: {
+      attributes: { exclude: ['password'] },
+    },
+    scopes: {
+        withPassword: {
+            attributes: {},
+        }
+    },
     sequelize,
     modelName: 'User',
     tableName: "users"

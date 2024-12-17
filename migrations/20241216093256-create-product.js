@@ -29,14 +29,13 @@ module.exports = {
       },
       category: {
         type: Sequelize.STRING,
-        defaultValue: 'Uncategorized',
-        allowNull: false
+        defaultValue: 'Uncategorized'
       },
-      createdAt: {
+      created_at: {
         allowNull: false,
         type: Sequelize.DATE
       },
-      updatedAt: {
+      updated_at: {
         allowNull: false,
         type: Sequelize.DATE
       }

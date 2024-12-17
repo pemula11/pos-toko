@@ -1,9 +1,11 @@
 var express = require('express');
 var router = express.Router();
+const warpAsync = require('../utils/wrapAsync');
+const userController = require('../controllers/user');
 
 /* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
-});
+router.get('/', warpAsync(userController.getUsers));
+
+router.post('/login', warpAsync(userController.login));
 
 module.exports = router;

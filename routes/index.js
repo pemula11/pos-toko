@@ -1,20 +1,15 @@
 const express = require('express');
 const router = express.Router();
 const {User, sequelize} = require('../models');
+const warpAsync = require('../utils/wrapAsync');
+
+const userController = require('../controllers/user');
+
 
 /* GET home page. */
-router.get('/', async function(req, res, next) {
-  try {
-    const users = await User.findAll();
-    res.json(users);
-  }
-  catch (error) {
-    console.error(error);
-    res.status(500).json({message: 'Server Error'});
-  }
-  finally {
-     
-  }
-});
+router.get('/', warpAsync(userController.getUsers));
+
+
+
 
 module.exports = router;
