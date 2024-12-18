@@ -1,5 +1,6 @@
 const { where } = require('sequelize');
-const {User, RefreshToken} = require('../models');
+const refreshTokenService = require('../services/refreshTokenService');
+const userService = require('../services/userService');
 const Validator = require('fastest-validator');
 const { token } = require('morgan');
 const v = new Validator();
@@ -23,11 +24,7 @@ module.exports.createRefreshToken = async (req, res, next) => {
     }
 
     try {
-        const user = await User.findOne({
-            where: {
-                id: user_id
-            }
-        });
+        const user = userService.findById(user_id);
 
         if (!user) {
             return res.status(404).json({
@@ -35,8 +32,7 @@ module.exports.createRefreshToken = async (req, res, next) => {
                 message: 'User not found'
             });
         }
-
-        const refreshToken = await RefreshToken.createToken(user);
+        const refreshToken = await refreshTokenService.createRefreshToken(user_id);
         return res.json({
             status: 'success',
             data: refreshToken
@@ -63,11 +59,7 @@ module.exports.getToken = async (req, res, next) => {
     const refreshToken = req.body.refresh_token;
 
     try {
-        const token = await RefreshToken.findOne({
-            where: {
-                token: refreshToken
-            }
-        });
+        const token = refreshTokenService.getRefreshToken(refreshToken);
 
         if (!token) {
             return res.status(404).json({
@@ -75,19 +67,6 @@ module.exports.getToken = async (req, res, next) => {
                 message: 'Token not found'
             });
         }
-
-        if (RefreshToken.verifyExpiration(token)){
-            RefreshToken.destroy({
-                where: {
-                    id: token.id
-                }
-            });
-            return res.status(400).json({
-                status: 'error',
-                message: 'Token has expired, Please login again'
-            });
-        }
-
         return res.json({
             status: 'success',
             data: token
@@ -97,7 +76,7 @@ module.exports.getToken = async (req, res, next) => {
         console.error(error);
         return res.status(500).json({
             status: 'error',
-            message: 'Server Error'
+            message: 'Server Error ' + error
         });
     }
 }

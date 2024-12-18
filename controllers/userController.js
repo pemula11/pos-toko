@@ -1,5 +1,6 @@
 
-const {User, RefreshToken} = require('../models');
+const userService = require('../services/userService');
+
 const validator = require('fastest-validator');
 const v = new validator();
 const jwt = require('jsonwebtoken');
@@ -14,6 +15,9 @@ const {
 module.exports.getUsers = async function(req, res, next) {
     try {
       const users = await User.findAll();
+      if (!users) {
+        return res.status(404).json({message: 'Users not found'});
+      }
       res.json(users);
     }
     catch (error) {
@@ -41,31 +45,17 @@ module.exports.login = async (req, res, next) => {
   }
 
   const {email, password} = req.body;
-  try {
-    const user = await User.scope('withPassword').findOne({where: {email}});
-    if (!user) {
-      return res.status(401).json({message: 'Invalid email or password'});
-    }
+  
     
-    const isValidPassword = await user.validPassword(password);
-    if (!isValidPassword) {
-      return res.status(401).json({message: 'Invalid email or password'});
-    }
     // token
-    const token = jwt.sign({user}, JWT_SECRET, {expiresIn: JWT_ACCESS_TOKEN_EXPIRED});
+  const userData = await userService.login(email, password);
 
-    const refreshToken = await RefreshToken.createToken(user);
-    return res.json({
-      status: 'success',
-      data: {
-        user,
-        token,
-        refreshToken
-      }
-    });
-  }
-  catch (error) {
-    console.error(error);
-    res.status(500).json({message: 'Server Error'});
-  }
+  return res.json({
+    status: 'success',
+    data: {
+      ...userData
+    }
+  });
+  
+  
 }

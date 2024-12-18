@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const {Product} = require('../models');
 const warpAsync = require('../utils/wrapAsync');
-const productController = require('../controllers/product');
+const productController = require('../controllers/productController');
 
 router.get('/', warpAsync(productController.getProducts));
 router.get('/search', warpAsync(productController.getProductsBy));

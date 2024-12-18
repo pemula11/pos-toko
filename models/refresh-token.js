@@ -53,45 +53,8 @@ module.exports = (sequelize, DataTypes) => {
         modelName: 'RefreshToken'
     });
 
-    RefreshToken.createToken = async (user) => {
-        const expirationInSeconds = convertToSeconds(process.env.JWT_REFRESH_TOKEN_EXPIRED);
-       
-        let expiredAt = new Date();
-        console.log(expirationInSeconds);
-        expiredAt.setSeconds(expiredAt.getSeconds() + expirationInSeconds);
-        let _token = jwt.sign({ user }, process.env.JWT_SECRET_REFRESH_TOKEN, { expiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRED });
-
-        let refreshToken = await RefreshToken.create({
-          token: _token,
-          user_id: user.id,
-          expiresIn: expiredAt,
-        });
-        return refreshToken.token;
-      };
-
-      RefreshToken.verifyExpiration = (token) => {
-        return token.expiresIn.getTime() < new Date().getTime();
-      };
+   
     return RefreshToken;
 }
 
-function convertToSeconds(expiration) {
-    const match = expiration.match(/^(\d+)([dhms])$/);
-    if (!match) {
-        throw new Error('Invalid expiration format');
-    }
-    const value = parseInt(match[1], 10);
-    const unit = match[2];
-    switch (unit) {
-        case 'd':
-            return value * 24 * 60 * 60;
-        case 'h':
-            return value * 60 * 60;
-        case 'm':
-            return value * 60;
-        case 's':
-            return value;
-        default:
-            throw new Error('Invalid expiration unit');
-    }
-}
+

@@ -3,7 +3,7 @@ const router = express.Router();
 const {User, sequelize} = require('../models');
 const warpAsync = require('../utils/wrapAsync');
 
-const userController = require('../controllers/user');
+const userController = require('../controllers/userController');
 
 
 /* GET home page. */

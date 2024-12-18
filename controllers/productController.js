@@ -1,4 +1,4 @@
-const {Product} = require('../models');
+const productService = require('../services/productServices');
 const validator = require('fastest-validator');
 const v = new validator();
 const {Op} = require('sequelize');
@@ -8,7 +8,7 @@ module.exports.getProducts = async (req, res, next) => {
     const limit = parseInt(req.query.limit) || 10;
 
     const startIndex = (page - 1) * limit;
-    const products = await Product.findAll();
+    const products = await productService.findAllData();
     const total = products.length;
     const result = {
         data: products.slice(startIndex, startIndex + limit),
@@ -27,27 +27,7 @@ module.exports.getProducts = async (req, res, next) => {
 module.exports.getProduct = async (req, res, next) => {
     const {id} = req.params;
 
-    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-    if (!id || !uuidRegex.test(id)) {
-        return res.status(400).json({
-            status: 'error',
-            message: 'ID is required'
-        });
-    }
-    
-
-    const product = await Product.findOne({
-        where: {
-            id: id
-        }
-    });
-
-    if (!product) {
-        return res.status(404).json({
-            status: 'error',
-            message: 'Product not found'
-        });
-    }
+    const product = await productService.findOne(id);
 
     return res.json({
         status: 'success',
@@ -56,26 +36,15 @@ module.exports.getProduct = async (req, res, next) => {
 }
 
 module.exports.getProductsBy = async (req, res, next) => {
-    const {name, category} = req.query;
+    const name = req.query.name || '';
+    const category = req.query.category || '';
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
 
     const startIndex = (page - 1) * limit;
 
-
-
-    const whereClause = {};
-    if (name) {
-        whereClause.name = { [Op.iLike]: `%${name}%` };
-    }
-    if (category) {
-        whereClause.category = { [Op.iLike]: `%${category}%` };
-    }
-
-    const products = await Product.findAll({
-        where: whereClause,
-        
-    });
+    
+    const products = await productService.findBy(name, category);
     if (!products.length) {
         return res.status(404).json({
             status: 'error',
@@ -121,12 +90,12 @@ module.exports.addProduct = async (req, res, next) => {
 
     const {name, price, stock, description, category} = req.body;
 
-    const product = await Product.create({
-        name: name,
-        price: price,
-        stock: stock,
-        description: description,
-        category: category
+    const product = await productService.create({
+        name,
+        price,
+        stock,
+        description,
+        category
     });
 
     return res.json({
@@ -138,13 +107,8 @@ module.exports.addProduct = async (req, res, next) => {
 
 module.exports.updateProduct = async (req, res, next) => {
     const {id} = req.params;
-    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-    if (!id || !uuidRegex.test(id)) {
-        return res.status(400).json({
-            status: 'error',
-            message: 'ID is required'
-        });
-    }
+    
+    
     const schema = {
         name: 'string|optional',
         price: 'number|min:1|optional',
@@ -161,20 +125,7 @@ module.exports.updateProduct = async (req, res, next) => {
         });
     }
 
-    const product = await Product.findOne({
-        where: {
-            id: id
-        }
-    })
-
-    if (!product) {
-        return res.status(404).json({
-            status: 'error',
-            message: 'Product not found'
-        });
-    }
-
-    await product.update(req.body);
+    const product = await productService.update(id, req.body);
 
     return res.json({
         status: 'success',
@@ -184,26 +135,7 @@ module.exports.updateProduct = async (req, res, next) => {
 
 module.exports.deleteProduct = async (req, res, next) => {
     const {id} = req.params;
-    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-    if (!id || !uuidRegex.test(id)) {
-        return res.status(400).json({
-            status: 'error',
-            message: 'ID is required'
-        });
-    }
-    const product = await Product.findOne({
-        where: {
-            id: id
-        }
-    })
-    if (!product) {
-        return res.status(404).json({
-            status: 'error',
-            message: 'Product not found'
-        });
-    }
-
-    product.destroy();
+    const product = await productService.delete(id);
     return res.json({
         status: 'success',
         message: 'product deleted'
