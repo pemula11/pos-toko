@@ -14,6 +14,23 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
     }
+
+    async checkHasStock(quantity) {
+      if (this.stock < quantity) {
+        return false;
+      }
+      return true;
+    }
+    async reduceStock(quantity) {
+      if (this.checkHasStock(quantity)) {
+        this.stock -= quantity;
+        await this.save();
+        return true;
+      } else {
+        return false;
+      }
+    }
+
   }
   Product.init({
     id: {

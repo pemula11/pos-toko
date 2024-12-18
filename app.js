@@ -10,6 +10,7 @@ const logger = require('morgan');
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const productsRouter = require('./routes/products');
+const transactionsRouter = require('./routes/transaction');
 
 const ExpressError = require('./utils/ExpressError');
 
@@ -30,10 +31,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/products', productsRouter);
+app.use('/transactions', transactionsRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  next(createError(404));
+  next(new ExpressError('Page Not Found', 404));
 });
 
 app.get('*', function(req,res, next) {
