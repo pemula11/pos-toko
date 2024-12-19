@@ -29,6 +29,16 @@ class UserRepository {
             throw new Error("Failed fetch data from database");
         })
     }
+
+    async create(user){
+        try {
+            return await User.create(user);
+        }
+        catch (error){
+            console.error("Failed to create user. Error: ", error);
+            throw new Error("Failed to create user");
+        }
+    }
 }
 
 module.exports = new UserRepository();

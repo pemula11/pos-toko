@@ -10,6 +10,21 @@ module.exports.getTransactions = async (req, res) => {
     });
 }
 
+module.exports.getTransaction = async (req, res) => {
+    const {id} = req.params;
+    const transaction = await transactionService.findOne(id);
+    if (!transaction) {
+        return res.status(404).json({
+            status: 'error',
+            message: 'Transaction not found'
+        });
+    }
+    return res.json({
+        status: 'success',
+        data: transaction
+    });
+}
+
 module.exports.createTransaction = async (req, res) => {
    const schema = {
        user_id: 'string|empty:false',

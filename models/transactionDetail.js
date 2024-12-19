@@ -13,12 +13,12 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
         
-       TransactionDetail.belongsTo(models.Transaction, {
+      this.Transaction = TransactionDetail.belongsTo(models.Transaction, {
             foreignKey: 'transaction_id',
             as: 'transaction',
             targetKey: 'id'
        });
-         TransactionDetail.belongsTo(models.Product, {
+       this.Product =  TransactionDetail.belongsTo(models.Product, {
             foreignKey: 'product_id',
             as: 'product',
             targetKey: 'id'

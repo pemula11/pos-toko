@@ -3,7 +3,7 @@ const {Transaction} = require('../models');
 class TransactionRepository {
     async findAll(){
         return await Transaction.findAll({
-            include: ['user', 'transactionDetails']
+            include: [Transaction.User]
         });
     }
 
@@ -12,7 +12,16 @@ class TransactionRepository {
             where: {
                 id: id
             },
-            include: ['user']
+            include: [{
+                association: 'user',
+                attributes: [ 'id', 'name', 'email' ]},
+                {
+                association: 'transactionDetails',
+                attributes: [ 'id', 'productId', 'price', 'quantity', 'subtotal' ],
+                include: [ {
+                     association: 'product',
+                    attributes: [ 'name'] } ],  
+                }]
         }).catch((error) => {
             console.error("Failed fetch data from database. Error: ", error);
             throw new Error("Failed fetch data from database");

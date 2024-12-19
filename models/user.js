@@ -3,6 +3,7 @@ const {
   Model
 } = require('sequelize');
 const bcrypt = require('bcrypt');
+const { v4: uuidv4 } = require('uuid');
 
 
 module.exports = (sequelize, DataTypes) => {
@@ -30,9 +31,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     password: {
       type: DataTypes.STRING,
-      validate: {
-        is: /^[0-9a-f]{64}$/i,
-      },
+      allowNull: false,
     },
     email: DataTypes.STRING,
     createdAt: {

@@ -13,12 +13,12 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
         
-        Transaction.belongsTo(models.User, {
+       this.User = Transaction.belongsTo(models.User, {
             foreignKey: 'created_by',
             as: 'user'
         });
 
-        Transaction.hasMany(models.TransactionDetail, {
+       this.TransactionDetail = Transaction.hasMany(models.TransactionDetail, {
             as: 'transactionDetails',
         });
 

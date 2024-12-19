@@ -2,9 +2,13 @@ const {Product} = require('../models');
 const {Op} = require('sequelize');
 
 class ProductRepository {
-    async findAllData(){
+    async findAllData(limit, offset){
         try {
-            return await Product.findAll();
+            return await Product.findAll(
+                {
+                    limit: limit,
+                    offset: offset}
+            );
         } catch (error) {
             console.error("Failed to fetch products: ", error);
             throw new Error("Failed to fetch products: ", error);
@@ -23,7 +27,7 @@ class ProductRepository {
        }
     }
 
-    async findBy(name = '', category = ''){
+    async findBy(limit, offset ,name = '', category = ''){
         try {
             const whereClause = {};
             if (name !== '') {
@@ -34,7 +38,9 @@ class ProductRepository {
             }
             
             return await Product.findAll({
-                 where: whereClause,
+                 where: whereClause, 
+                 limit: limit,
+                 offset: offset
             });
         }
         catch (error) {
@@ -66,6 +72,14 @@ class ProductRepository {
         } catch (error) {
           //  console.error("Failed to delete product: ", error);
             throw new Error("Failed to delete product: ", error);
+        }
+    }
+
+    async countData(){
+        try {
+            return await Product.count();
+        } catch (error) {
+            throw new Error("Failed to count product: ", error);
         }
     }
 

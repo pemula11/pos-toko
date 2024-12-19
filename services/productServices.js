@@ -9,9 +9,9 @@ class ProductService {
         return regex.test(uuid);
     }
 
-    async findAllData(){
+    async findAllData(limit, offset) {
         try {
-            return await ProductRepository.findAllData();
+            return await ProductRepository.findAllData(limit, offset);
         } catch (error) {
             throw new Error(error);
         }
@@ -26,8 +26,8 @@ class ProductService {
         
     }
 
-    async findBy(name, category){
-        return await ProductRepository.findBy(name, category);
+    async findBy(limit, offset, name, category) {
+        return await ProductRepository.findBy(limit, offset, name, category);
     }
 
     async create(product) {
@@ -45,6 +45,10 @@ class ProductService {
         return await ProductRepository.update(product, newProduct);
     }
 
+    async updateDirect(product, data){
+        return await ProductRepository.update(product, data);
+    }
+
     async delete(id){
 
         if (!this.validateUUID(id)) {
@@ -58,6 +62,9 @@ class ProductService {
 
     }
 
+    async countData(){
+        return await ProductRepository.countData();
+    }
 
 }
 

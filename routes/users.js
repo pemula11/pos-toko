@@ -7,5 +7,6 @@ const userController = require('../controllers/userController');
 router.get('/', warpAsync(userController.getUsers));
 
 router.post('/login', warpAsync(userController.login));
+router.post('/register', warpAsync(userController.register));
 
 module.exports = router;

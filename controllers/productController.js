@@ -8,10 +8,10 @@ module.exports.getProducts = async (req, res, next) => {
     const limit = parseInt(req.query.limit) || 10;
 
     const startIndex = (page - 1) * limit;
-    const products = await productService.findAllData();
-    const total = products.length;
+    const products = await productService.findAllData(limit, startIndex);
+    const total = await productService.countData();
     const result = {
-        data: products.slice(startIndex, startIndex + limit),
+        data: products,
         page: page,
         limit: limit,
         total: total,
@@ -44,17 +44,16 @@ module.exports.getProductsBy = async (req, res, next) => {
     const startIndex = (page - 1) * limit;
 
     
-    const products = await productService.findBy(name, category);
+    const products = await productService.findBy(limit, startIndex, name, category);
     if (!products.length) {
         return res.status(404).json({
             status: 'error',
             message: 'Product not found'
         });
     }
-    const total = products.length;
-    const newProduct = await products.slice(startIndex, startIndex + limit);
+    const total = await productService.countData();
     const result = {
-        data: newProduct,
+        data: products,
         page: page,
         limit: limit,
         total: total,

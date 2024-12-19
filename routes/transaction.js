@@ -5,6 +5,7 @@ const transactionController = require('../controllers/transactionController');
 
 /* GET users listing. */
 router.get('/', warpAsync(transactionController.getTransactions));
+router.get('/:id', warpAsync(transactionController.getTransaction));
 router.post('/', warpAsync(transactionController.createTransaction));
 
 module.exports = router;

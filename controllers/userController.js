@@ -59,3 +59,28 @@ module.exports.login = async (req, res, next) => {
   
   
 }
+
+module.exports.register = async (req, res, next) => {
+  const schema = {
+    name: 'string|empty:false',
+    email: 'email|empty:false',
+    password: 'string|min:6',
+   // role: 'string|default:user'
+  }
+
+  const check = v.validate(req.body, schema);
+
+  if (check.length) {
+    return res.status(400).json({
+      message: 'Validation failed',
+      errors: check
+    });
+  }
+
+  const user = await userService.register(req.body);
+
+  return res.json({
+    status: 'success',
+    data: user
+  });
+}

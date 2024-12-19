@@ -2,6 +2,7 @@ const UserRepository = require('../repository/UserRepository');
 const refreshTokenService = require('./refreshTokenService');
 const jwt = require('jsonwebtoken');
 const ExpressError = require('../utils/ExpressError');
+const bcrypt = require('bcrypt');
 
 const {
     JWT_SECRET,
@@ -39,7 +40,18 @@ class UserService {
             const refreshToken = await refreshTokenService.createRefreshToken(user);
             return {dataUser, token, refreshToken};
         }
+    
+    async register(user) {
+        const email = user.email;
+
+        const userExist = await UserRepository.findByEmail(email);
+        if (userExist) {
+            throw new ExpressError('Email already exist', 400);
+        }
+        user.password = await bcrypt.hash(user.password, 10);
         
+        return await UserRepository.create(user);
+    }
 
 }
 

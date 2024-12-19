@@ -13,6 +13,10 @@ class TransactionService {
     }
 
     async findOne(id){
+        if (!this.validateUUID(id)) {
+            throw new ExpressError('Invalid ID', 400);
+        }
+
         return await TransactionRepository.findOne(id);
     }
 
@@ -34,6 +38,7 @@ class TransactionService {
         }
         
         let total = 0;
+        const products = [];
         for (const element of details){
             const validate = v.validate(element, schema);
             if (validate.length){
@@ -46,12 +51,16 @@ class TransactionService {
             if (product.stock < element.quantity){
                 throw new ExpressError('Product out of stock', 400);
             }
-            if (!product.reduceStock(element.quantity)){
-                throw new ExpressError('Failed to reduce stock', 500);
-            }
+            product.stock -= element.quantity;
+            products.push(product);
+
 
             total += element.subtotal;
         };
+
+        products.forEach(async product => {
+           await productServices.updateDirect(product, {stock: product.stock});
+        })
 
         const transaction = await this.create({
             transactionDate: transactionDate,
@@ -69,6 +78,11 @@ class TransactionService {
         return transaction;
 
 
+    }
+
+    validateUUID(uuid) {
+        const regex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        return regex.test(uuid);
     }
 }
 
