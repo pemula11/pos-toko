@@ -18,8 +18,10 @@ const ExpressError = require('./utils/ExpressError');
 const errorHandler = require('./middleware/errorHandler');
 const verifyToken = require('./middleware/verifyToken');
 const permissions = require('./middleware/permission');
+const rateLimit = require('./middleware/rateLimiter');
 
 const app = express();
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -30,12 +32,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+//app.use(rateLimit);
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
-app.use('/refresh_token', refreshTokenRouter);
-app.use('/products', verifyToken, productsRouter);
-app.use('/transactions', verifyToken, transactionsRouter);
+app.use('/users', rateLimit(5), usersRouter);
+app.use('/refresh_token', rateLimit(5), refreshTokenRouter);
+app.use('/products', rateLimit(100), verifyToken, productsRouter);
+app.use('/transactions', rateLimit(100), verifyToken, transactionsRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
