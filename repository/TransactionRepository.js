@@ -1,10 +1,17 @@
 const {Transaction} = require('../models');
 
 class TransactionRepository {
-    async findAll(){
-        return await Transaction.findAll({
-            include: [Transaction.User]
-        });
+    async findAll(limit = 10, offset = 0){
+        return await Transaction.findAll(
+            {
+            include: [{
+                association: 'user',
+                attributes: [ 'id', 'name', 'email' ]}
+            ],
+            limit: limit,
+            offset: offset,
+            exlude: ['userId']
+            });
     }
 
     async findOne(id){
@@ -12,6 +19,7 @@ class TransactionRepository {
             where: {
                 id: id
             },
+            exlude: ['userId'],
             include: [{
                 association: 'user',
                 attributes: [ 'id', 'name', 'email' ]},
@@ -72,7 +80,13 @@ class TransactionRepository {
     // }
 
 
-    
+    async countData(){
+        try {
+            return await Transaction.count();
+        } catch (error) {
+            throw new Error("Failed to count transaction: ", error);
+        }
+    }
 }
 
 module.exports = new TransactionRepository();

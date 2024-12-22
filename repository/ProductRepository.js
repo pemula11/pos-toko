@@ -2,7 +2,7 @@ const {Product} = require('../models');
 const {Op} = require('sequelize');
 
 class ProductRepository {
-    async findAllData(limit, offset){
+    async findAllData(limit = 10, offset= 0){
         try {
             return await Product.findAll(
                 {

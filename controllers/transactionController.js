@@ -3,10 +3,19 @@ const validator = require('fastest-validator');
 const v = new validator();
 
 module.exports.getTransactions = async (req, res) => {
-    const transactions = await transactionService.findAll();
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
+    const startIndex = (page - 1) * limit;
+    const transactions = await transactionService.findAll(limit, startIndex);
+    const total = await transactionService.countData();
     return res.json({
         status: 'success',
-        data: transactions
+        data: transactions,
+        page: page,
+        limit: limit,
+        total: total,
+        pages: Math.ceil(total / limit),
     });
 }
 

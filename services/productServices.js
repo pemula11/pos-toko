@@ -22,7 +22,12 @@ class ProductService {
         if (!this.validateUUID(id)) {
             throw new ExpressError('Invalid ID', 400);
         }
-        return await ProductRepository.findOne(id);
+        const product = await ProductRepository.findOne(id);
+
+        if (!product) {
+            throw new ExpressError('Product not found', 404);
+        }
+        return product;
         
     }
 

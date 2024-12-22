@@ -8,8 +8,8 @@ const productServices = require('./productServices');
 const v = new validator();
 
 class TransactionService {
-    async findAll(){
-        return await TransactionRepository.findAll();
+    async findAll(limit = 10, offset = 0){
+        return await TransactionRepository.findAll(limit, offset);
     }
 
     async findOne(id){
@@ -78,6 +78,10 @@ class TransactionService {
         return transaction;
 
 
+    }
+
+    async countData(){
+        return await TransactionRepository.countData();
     }
 
     validateUUID(uuid) {

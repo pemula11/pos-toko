@@ -8,6 +8,7 @@
   "dependencies": {
     "@sequelize/postgres": "^7.0.0-alpha.43",
     "bcrypt": "^5.1.1",
+    "chai": "^5.1.2",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "dotenv": "^16.4.7",
@@ -19,10 +20,12 @@
     "morgan": "~1.9.1",
     "nodemon": "^3.1.9",
     "sequelize": "^6.37.5",
+    "sinon": "^19.0.2",
     "uuid": "^11.0.3"
   },
   "devDependencies": {
     "init": "^0.1.2",
+    "mocha": "^11.0.1",
     "sequelize-cli": "^6.6.2"
   }
 }

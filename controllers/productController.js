@@ -28,6 +28,12 @@ module.exports.getProduct = async (req, res, next) => {
     const {id} = req.params;
 
     const product = await productService.findOne(id);
+    if (!product) {
+        return res.status(404).json({
+            status: 'error',
+            message: 'Product not found'
+        });
+    }
 
     return res.json({
         status: 'success',
