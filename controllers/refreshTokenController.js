@@ -79,4 +79,40 @@ module.exports.getToken = async (req, res, next) => {
             message: 'Server Error ' + error
         });
     }
+
+    
 }
+
+module.exports.refreshToken = async (req, res, next) => {
+    const schema = {
+        refresh_token: 'string|empty:false',
+        email: 'string|empty:false',
+    }
+
+    const validate = v.validate(req.body, schema);
+    if (validate.length) {
+        return res.status(400).json({
+            status: 'error',
+            message: validate
+        });
+    }
+    const {email, refresh_token} = req.body;
+
+   
+    const token = await refreshTokenService.getRefreshToken(refresh_token);
+    
+
+    if (!token) {
+        return res.status(404).json({
+            status: 'error',
+            message: 'Token not found'
+        });
+    }
+    const newToken = await refreshTokenService.refreshToken(email, token);
+    return res.json({
+        status: 'success',
+        data: newToken
+    });
+   
+}
+

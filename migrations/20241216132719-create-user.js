@@ -19,6 +19,10 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false
       },
+      role: {
+        type: Sequelize.ENUM('admin', 'user'),
+        defaultValue: 'user'
+      },
       created_at: {
         allowNull: false,
         type: Sequelize.DATE
@@ -30,6 +34,7 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
+    
     await queryInterface.dropTable('users');
   }
 };

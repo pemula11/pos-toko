@@ -24,6 +24,7 @@ class RefreshTokenRepository {
             throw new Error("Failed to fetch refresh token");
         }
     }
+    
 
     async delete(token) {
         try {
@@ -34,6 +35,19 @@ class RefreshTokenRepository {
             });
         } catch (error) {
             onsole.error("Failed to Delete refresh token. Error: ", error);
+            throw new Error("Failed to Delete refresh token");
+        }
+    }
+
+    async deleteByUserId(userId) {
+        try {
+            RefreshToken.destroy({
+                where: {
+                    user_id: userId
+                }
+            });
+        } catch (error) {
+            console.error("Failed to Delete refresh token. Error: ", error);
             throw new Error("Failed to Delete refresh token");
         }
     }

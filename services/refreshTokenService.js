@@ -38,9 +38,32 @@ class RefreshTokenService {
 
     }
 
+
+    async refreshToken(email, token){
+        console.log(token);
+        const newToken = await jwt.verify(token, process.env.JWT_SECRET_REFRESH_TOKEN, async (err, decoded) => {
+            console.log(decoded);
+            if (err) {
+                throw new ExpressError('Invalid token', 401);
+            }
+            if (email !== decoded.user.email){
+                throw new ExpressError('Invalid Email', 401);
+            }
+
+            const token = jwt.sign({
+                data: decoded.user
+            }, process.env.JWT_SECRET, {expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRED});
+
+            return token;
+        });
+        
+        return newToken
+    }
+
     verifyExpiration = (token) => {
         return token.expiresIn.getTime() < new Date().getTime();
     };
+    
 
     convertToSeconds(expiration) {
         const match = expiration.match(/^(\d+)([dhms])$/);

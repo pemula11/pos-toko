@@ -46,6 +46,7 @@ module.exports = {
   },
 
   async down (queryInterface, Sequelize) {
+    await queryInterface.removeConstraint('refresh_tokens', 'refresh_tokens_user_id_fkey');
     await queryInterface.dropTable('refresh_tokens');
   }
 };

@@ -25,10 +25,10 @@ class TransactionService {
     }
 
     async makeTransactionWithDetail(transactionDate, details, userId){
-        const user = await UserRepository.findOne(userId);
-        if (!user){
-            throw new ExpressError('User not found', 404);
-        }
+        // const user = await UserRepository.findOne(userId);
+        // if (!user){
+        //     throw new ExpressError('User not found', 404);
+        // }
 
         const schema = {
             price: 'number|empty:false|default:0|min:1',
@@ -42,7 +42,7 @@ class TransactionService {
         for (const element of details){
             const validate = v.validate(element, schema);
             if (validate.length){
-                throw new ExpressError(`Invalid data, ${validate}`, 400);
+                throw new ExpressError(validate, 400);
             }
             const product = await productServices.findOne(element.productId);
             if (!product){

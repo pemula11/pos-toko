@@ -31,14 +31,15 @@ class UserService {
             if (!isValidPassword) {
                 throw new ExpressError("Mail or password not found", 404);
             }
-            const dataUser = {
+            const data = {
                 user_id: user.id,
                 email: user.email,
-                username: user.name
+                username: user.name,
+                role: user.role
             }
-            const token = jwt.sign({dataUser}, JWT_SECRET, {expiresIn: JWT_ACCESS_TOKEN_EXPIRED})
+            const token = jwt.sign({data}, JWT_SECRET, {expiresIn: JWT_ACCESS_TOKEN_EXPIRED})
             const refreshToken = await refreshTokenService.createRefreshToken(user);
-            return {dataUser, token, refreshToken};
+            return {data, token, refreshToken};
         }
     
     async register(user) {

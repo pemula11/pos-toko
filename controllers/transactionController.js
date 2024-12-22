@@ -27,7 +27,8 @@ module.exports.getTransaction = async (req, res) => {
 
 module.exports.createTransaction = async (req, res) => {
    const schema = {
-       user_id: 'string|empty:false',
+       details: 'array|empty:false',
+
    }
 
     const validate = v.validate(req.body, schema);
@@ -38,13 +39,17 @@ module.exports.createTransaction = async (req, res) => {
         });
     }
 
-    const {user_id, details, transtion_date} = req.body;
+    const { details} = req.body;
     if (details.length === 0) {
         return res.status(400).json({
             status: 'error',
             message: 'Details is required'
         });
     }
+
+    const user_id = req.user.data.user_id;
+
+    
 
     const transaction = await transactionService.makeTransactionWithDetail(new Date(), details, user_id);
     return res.json({
